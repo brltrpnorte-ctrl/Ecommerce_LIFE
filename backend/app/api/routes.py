@@ -7,9 +7,12 @@ import logging
 from fastapi import APIRouter, Header, HTTPException, Query, status
 
 from app.core.settings import get_settings
-from app.data.catalog import BRANDS, CATEGORIES, PRODUCTS
 from app.models.schemas import (
+    AdminContentResponse,
+    AdminContentUpdateRequest,
     AuditLogListResponse,
+    BrandListResponse,
+    CategoryListResponse,
     CheckoutValidationRequest,
     CheckoutValidationResponse,
     ContactListResponse,
@@ -25,6 +28,7 @@ from app.models.schemas import (
     LeadUpdateRequest,
     Product,
     ProductListResponse,
+    SiteContent,
     ShippingOption,
     ShippingQuoteRequest,
     ShippingQuoteResponse,
@@ -33,12 +37,13 @@ from app.models.schemas import (
     TaskRecord,
     TaskUpdateRequest,
 )
-from app.services import CRMStore
+from app.services import CRMStore, SiteStore
 from app.services.crm_store import PIPELINE_STAGES
 
 router = APIRouter()
 settings = get_settings()
 crm_store = CRMStore(settings.database_path, settings.backup_dir)
+site_store = SiteStore(settings.database_path, settings.backup_dir)
 
 
 def normalize_role(value: str | None) -> str:
@@ -79,14 +84,23 @@ def health() -> dict[str, str]:
     return {'status': 'ok', 'service': settings.app_name}
 
 
-@router.get('/categories')
-def list_categories() -> dict[str, list[str]]:
-    return {'items': CATEGORIES}
+@router.get('/site/content', response_model=SiteContent)
+def get_site_content() -> SiteContent:
+    return SiteContent(**site_store.get_site_content())
 
 
-@router.get('/brands')
-def list_brands() -> dict[str, list[str]]:
-    return {'items': BRANDS}
+@router.get('/categories', response_model=CategoryListResponse)
+def list_categories() -> CategoryListResponse:
+    categories = site_store.list_categories()
+    return CategoryListResponse(
+        items=[item['slug'] for item in categories],
+        labels={item['slug']: item['label'] for item in categories},
+    )
+
+
+@router.get('/brands', response_model=BrandListResponse)
+def list_brands() -> BrandListResponse:
+    return BrandListResponse(items=site_store.list_brands())
 
 
 @router.get('/products', response_model=ProductListResponse)
@@ -100,7 +114,7 @@ def list_products(
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=12, ge=1, le=48),
 ) -> ProductListResponse:
-    items = PRODUCTS
+    items = site_store.list_products()
 
     if category:
         items = [item for item in items if item.category == category]
@@ -133,7 +147,7 @@ def list_products(
 def get_product(slug: str) -> Product:
     if not slug or len(slug) > 100:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Slug invalido')
-    for item in PRODUCTS:
+    for item in site_store.list_products():
         if item.slug == slug:
             return item
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Produto nao encontrado')
@@ -193,12 +207,13 @@ def admin_overview(
 ) -> dict[str, int | float]:
     require_admin_token(x_admin_token)
 
-    low_stock = [item for item in PRODUCTS if item.stock <= 12]
-    featured = [item for item in PRODUCTS if item.featured]
+    products = site_store.list_products()
+    low_stock = [item for item in products if item.stock <= 12]
+    featured = [item for item in products if item.featured]
     crm_snapshot = crm_store.dashboard()
 
     return {
-        'total_products': len(PRODUCTS),
+        'total_products': len(products),
         'low_stock_alerts': len(low_stock),
         'featured_products': len(featured),
         'estimated_month_revenue': 189430.0,
@@ -206,6 +221,27 @@ def admin_overview(
         'crm_total_leads': crm_snapshot['total_leads'],
         'crm_conversion_rate': crm_snapshot['conversion_rate'],
     }
+
+
+@router.get('/admin/content', response_model=AdminContentResponse)
+def admin_content(
+    x_admin_token: Annotated[str | None, Header()] = None,
+) -> AdminContentResponse:
+    require_admin_token(x_admin_token)
+    return AdminContentResponse(**site_store.get_admin_content())
+
+
+@router.put('/admin/content', response_model=AdminContentResponse)
+def admin_update_content(
+    payload: AdminContentUpdateRequest,
+    x_admin_token: Annotated[str | None, Header()] = None,
+) -> AdminContentResponse:
+    require_admin_token(x_admin_token)
+    try:
+        updated = site_store.update_admin_content(payload.model_dump(), by='admin')
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return AdminContentResponse(**updated)
 
 
 @router.get('/crm/stages')
