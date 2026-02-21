@@ -112,7 +112,7 @@ export function SiteHeader() {
           <div className="header-column header-column-right">
             <div className="logo-section">
               <NavLink to="/" className="header-logo-link" onClick={() => setMenuOpen(false)} aria-label="Pagina inicial">
-                <img className="header-logo mx-auto" src={lifeLogo} alt="Lifestyle Store" />
+                <img className="header-logo ml-auto" src={lifeLogo} alt="Lifestyle Store" />
               </NavLink>
             </div>
           </div>
