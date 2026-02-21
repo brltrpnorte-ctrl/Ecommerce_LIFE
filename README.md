@@ -1,73 +1,94 @@
-# Welcome to your Lovable project
+# Ecommerce LIFE
 
-## Project info
+Loja de roupas premium com storytelling visual, animações avançadas e foco em conversão.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🚀 Início Rápido
 
-## How can I edit this code?
+```powershell
+# Setup automático
+.\start.bat
 
-There are several ways of editing your application.
+# Iniciar tudo
+.\run.ps1
 
-**Use Lovable**
+# Testar
+cd scripts
+.\smoke-tests.ps1
+```
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+**URLs:**
+- Frontend: http://localhost:5173
+- Backend: http://localhost:8000
+- Docs: http://localhost:8000/docs
 
-Changes made via Lovable will be committed automatically to this repo.
+**Token Admin:** `szL-MCZxCGEUsBxratrSiytRVE6K8uss6tnisj5DzEY`
 
-**Use your preferred IDE**
+## Stack implementada
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Frontend: React + Vite + CSS + GSAP + ScrollTrigger
+- Backend: FastAPI (Python)
+- Operacao: Docker Compose (frontend + backend)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Escopo inicial entregue
 
-Follow these steps:
+- Home como pagina de apresentacao da loja com:
+  - banner/carrossel
+  - secao holografica do trevo de 4 folhas
+  - galeria polaroid com modal
+- Catalogo de produtos com filtros de marca/categoria/preco/busca
+- Pagina de detalhe do produto com variacoes e add no carrinho
+- Carrinho e checkout com:
+  - calculo de frete (mock estruturado)
+  - validacao antifraude basica (mock estruturado)
+  - opcoes Pix/cartao/boleto + parcelas
+- Paginas de conta, login, rastreamento, wishlist e admin
+- Backend com endpoints para catalogo, frete, checkout e dashboard admin
+- Seguranca inicial:
+  - CORS por ambiente
+  - security headers
+  - token para endpoint administrativo
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Rodar em desenvolvimento
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Backend
 
-# Step 3: Install the necessary dependencies.
-npm i
+```bash
+cd backend
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### Frontend
+
+```bash
+cd frontend
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Frontend: `http://localhost:5173`
+API: `http://localhost:8000/api/v1`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Rodar em producao local (Docker)
 
-**Use GitHub Codespaces**
+```bash
+copy backend\.env.example backend\.env
+docker compose up --build -d
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+Frontend: `http://localhost:3000`
+API: `http://localhost:8000/api/v1`
 
-## What technologies are used for this project?
+## Token admin para teste
 
-This project is built with:
+Use o valor de `AUTH_TOKEN` em `backend/.env` na pagina `/admin`.
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## Proximas etapas criticas
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+1. Persistencia real (PostgreSQL + ORM + migracoes).
+2. Autenticacao real (JWT + refresh + OAuth Google/Apple).
+3. Integracao real de pagamento (Pix/cartao/boleto) e frete.
+4. Painel CMS completo para banners/galerias/promocoes.
+5. Observabilidade, testes E2E e hardening OWASP para go-live.

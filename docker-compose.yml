@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: ecommerce-life-backend
+    env_file:
+      - ./backend/.env
+    ports:
+      - '8000:8000'
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000/api/v1
+    container_name: ecommerce-life-frontend
+    ports:
+      - '3000:80'
+    restart: unless-stopped
+    depends_on:
+      - backend

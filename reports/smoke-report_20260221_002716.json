@@ -1,0 +1,372 @@
+﻿{
+    "timestamp":  "2026-02-21T00:27:16",
+    "results":  {
+                    "products":  {
+                                     "response":  {
+                                                      "items":  [
+                                                                    {
+                                                                        "id":  1,
+                                                                        "slug":  "camisa-oversized-aurora",
+                                                                        "name":  "Camisa Oversized Aurora",
+                                                                        "category":  "camisas",
+                                                                        "brand":  "Life Originals",
+                                                                        "description":  "Camisa premium com caimento amplo e textura leve para uso urbano.",
+                                                                        "price":  179.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G",
+                                                                                      "GG"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Verde Trevo",
+                                                                                       "Off White"
+                                                                                   ],
+                                                                        "stock":  33,
+                                                                        "rating":  4.8,
+                                                                        "featured":  true,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  2,
+                                                                        "slug":  "camisa-linho-sombra",
+                                                                        "name":  "Camisa Linho Sombra",
+                                                                        "category":  "camisas",
+                                                                        "brand":  "Rare Thread",
+                                                                        "description":  "Linho respiravel para visuais sofisticados em dias quentes.",
+                                                                        "price":  239.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Areia"
+                                                                                   ],
+                                                                        "stock":  16,
+                                                                        "rating":  4.6,
+                                                                        "featured":  false,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  3,
+                                                                        "slug":  "sneaker-neon-drift",
+                                                                        "name":  "Sneaker Neon Drift",
+                                                                        "category":  "tenis-sneakers",
+                                                                        "brand":  "North Pulse",
+                                                                        "description":  "Sneaker de alta resposta com design autoral e sola de impacto.",
+                                                                        "price":  699.9,
+                                                                        "sizes":  [
+                                                                                      "38",
+                                                                                      "39",
+                                                                                      "40",
+                                                                                      "41",
+                                                                                      "42",
+                                                                                      "43"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Cinza",
+                                                                                       "Verde Trevo"
+                                                                                   ],
+                                                                        "stock":  8,
+                                                                        "rating":  4.9,
+                                                                        "featured":  true,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  4,
+                                                                        "slug":  "lupa-vintage-ice",
+                                                                        "name":  "Lupa Vintage Ice",
+                                                                        "category":  "lupa",
+                                                                        "brand":  "Urban Clover",
+                                                                        "description":  "Oculos lifestyle com lente premium UV400 e aro acetinado.",
+                                                                        "price":  289.9,
+                                                                        "sizes":  [
+                                                                                      "Unico"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Transparente"
+                                                                                   ],
+                                                                        "stock":  41,
+                                                                        "rating":  4.5,
+                                                                        "featured":  true,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1511499767150-a48a237f0083"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  5,
+                                                                        "slug":  "shorts-tech-grid",
+                                                                        "name":  "Shorts Tech Grid",
+                                                                        "category":  "shorts",
+                                                                        "brand":  "Life Originals",
+                                                                        "description":  "Shorts com secagem rapida e bolsos funcionais para rotina ativa.",
+                                                                        "price":  159.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G",
+                                                                                      "GG"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Grafite"
+                                                                                   ],
+                                                                        "stock":  58,
+                                                                        "rating":  4.4,
+                                                                        "featured":  false,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1506629905607-55c5f2f6f4e6"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  6,
+                                                                        "slug":  "bermuda-street-raw",
+                                                                        "name":  "Bermuda Street Raw",
+                                                                        "category":  "bermudas",
+                                                                        "brand":  "Rare Thread",
+                                                                        "description":  "Bermuda robusta com corte reto e acabamento premium.",
+                                                                        "price":  189.9,
+                                                                        "sizes":  [
+                                                                                      "38",
+                                                                                      "40",
+                                                                                      "42",
+                                                                                      "44"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Oliva"
+                                                                                   ],
+                                                                        "stock":  27,
+                                                                        "rating":  4.3,
+                                                                        "featured":  false,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  7,
+                                                                        "slug":  "cueca-performance-core",
+                                                                        "name":  "Cueca Performance Core",
+                                                                        "category":  "cuecas",
+                                                                        "brand":  "North Pulse",
+                                                                        "description":  "Conforto termico, respiracao otimizada e elasticidade superior.",
+                                                                        "price":  69.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G",
+                                                                                      "GG"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Branco",
+                                                                                       "Cinza"
+                                                                                   ],
+                                                                        "stock":  115,
+                                                                        "rating":  4.7,
+                                                                        "featured":  false,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1512436991641-6745cdb1723f"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  8,
+                                                                        "slug":  "blusa-frio-eclipse",
+                                                                        "name":  "Blusa de Frio Eclipse",
+                                                                        "category":  "blusas-de-frio",
+                                                                        "brand":  "Urban Clover",
+                                                                        "description":  "Camada termica elegante para dias frios, toque macio premium.",
+                                                                        "price":  279.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G",
+                                                                                      "GG"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Marinho"
+                                                                                   ],
+                                                                        "stock":  20,
+                                                                        "rating":  4.8,
+                                                                        "featured":  true,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1548883354-94bcfe321cbb"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  9,
+                                                                        "slug":  "moletom-holo-clover",
+                                                                        "name":  "Moletom Holo Clover",
+                                                                        "category":  "moletom",
+                                                                        "brand":  "Life Originals",
+                                                                        "description":  "Moletom assinatura com detalhes refletivos e corte contemporaneo.",
+                                                                        "price":  329.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G",
+                                                                                      "GG"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Verde Trevo"
+                                                                                   ],
+                                                                        "stock":  12,
+                                                                        "rating":  4.9,
+                                                                        "featured":  true,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  10,
+                                                                        "slug":  "conjunto-heritage",
+                                                                        "name":  "Conjunto Heritage",
+                                                                        "category":  "conjuntos",
+                                                                        "brand":  "Rare Thread",
+                                                                        "description":  "Conjunto premium para imagem de marca forte e moderna.",
+                                                                        "price":  459.9,
+                                                                        "sizes":  [
+                                                                                      "P",
+                                                                                      "M",
+                                                                                      "G"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Verde Militar"
+                                                                                   ],
+                                                                        "stock":  9,
+                                                                        "rating":  4.6,
+                                                                        "featured":  false,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b"
+                                                                                  ]
+                                                                    },
+                                                                    {
+                                                                        "id":  11,
+                                                                        "slug":  "meia-high-comfort",
+                                                                        "name":  "Meia High Comfort",
+                                                                        "category":  "meias",
+                                                                        "brand":  "North Pulse",
+                                                                        "description":  "Meia cano medio antiatrito para uso diario e esportivo.",
+                                                                        "price":  39.9,
+                                                                        "sizes":  [
+                                                                                      "35-38",
+                                                                                      "39-43"
+                                                                                  ],
+                                                                        "colors":  [
+                                                                                       "Preto",
+                                                                                       "Branco"
+                                                                                   ],
+                                                                        "stock":  180,
+                                                                        "rating":  4.5,
+                                                                        "featured":  false,
+                                                                        "media":  [
+                                                                                      "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82"
+                                                                                  ]
+                                                                    }
+                                                                ],
+                                                      "total":  11,
+                                                      "page":  1,
+                                                      "page_size":  12
+                                                  },
+                                     "success":  true
+                                 },
+                    "checkout_3":  {
+                                       "response":  {
+                                                        "approved":  true,
+                                                        "risk_score":  38,
+                                                        "recommended_action":  "Aprovado"
+                                                    },
+                                       "success":  true
+                                   },
+                    "shipping_quote":  {
+                                           "response":  {
+                                                            "options":  [
+                                                                            {
+                                                                                "name":  "Express",
+                                                                                "days":  2,
+                                                                                "price":  42.9
+                                                                            },
+                                                                            {
+                                                                                "name":  "Padrao",
+                                                                                "days":  5,
+                                                                                "price":  26.84
+                                                                            },
+                                                                            {
+                                                                                "name":  "Economico",
+                                                                                "days":  9,
+                                                                                "price":  32.95
+                                                                            }
+                                                                        ]
+                                                        },
+                                           "success":  true
+                                       },
+                    "admin_valid_token":  {
+                                              "response":  {
+                                                               "total_products":  11,
+                                                               "low_stock_alerts":  3,
+                                                               "featured_products":  5,
+                                                               "estimated_month_revenue":  189430.0,
+                                                               "open_orders":  37
+                                                           },
+                                              "success":  true
+                                          },
+                    "checkout_1":  {
+                                       "response":  {
+                                                        "approved":  true,
+                                                        "risk_score":  12,
+                                                        "recommended_action":  "Aprovado"
+                                                    },
+                                       "success":  true
+                                   },
+                    "health":  {
+                                   "response":  {
+                                                    "status":  "ok",
+                                                    "service":  "Ecommerce LIFE API"
+                                                },
+                                   "success":  true
+                               },
+                    "checkout_2":  {
+                                       "response":  {
+                                                        "approved":  false,
+                                                        "risk_score":  62,
+                                                        "recommended_action":  "Revisao manual antifraude"
+                                                    },
+                                       "success":  true
+                                   },
+                    "categories":  {
+                                       "response":  {
+                                                        "items":  [
+                                                                      "camisas",
+                                                                      "tenis-sneakers",
+                                                                      "lupa",
+                                                                      "shorts",
+                                                                      "bermudas",
+                                                                      "cuecas",
+                                                                      "blusas-de-frio",
+                                                                      "moletom",
+                                                                      "conjuntos",
+                                                                      "meias"
+                                                                  ]
+                                                    },
+                                       "success":  true
+                                   },
+                    "admin_invalid_token":  {
+                                                "error":  "O servidor remoto retornou um erro: (401) Não Autorizado.",
+                                                "success":  false
+                                            }
+                }
+}
