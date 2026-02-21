@@ -129,10 +129,49 @@ main {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+.header-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.header-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 50%;
+  margin-left: 0;
+}
+
+.header-column-right {
+  margin-left: 20px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+  color: rgba(75, 78, 76, 1);
+  background-color: rgba(95, 95, 95, 1);
+  margin-right: 56px;
+}
+
+@media (max-width: 991px) {
+  .header-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .header-column {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+}
+
 .header-inner {
-  padding: 0.65rem 0 0.85rem;
+  padding: 10.4px 0 13.6px;
   display: grid;
-  gap: 0.85rem;
+  gap: 13.6px;
 }
 
 .header-top {
@@ -242,9 +281,9 @@ main {
 
 .hero {
   position: relative;
-  min-height: 78vh;
+  min-height: 739px;
   background-size: cover;
-  background-position: center;
+  background-position: 50% 50%;
   overflow: hidden;
 }
 
