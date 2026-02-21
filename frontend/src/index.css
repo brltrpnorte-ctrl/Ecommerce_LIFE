@@ -173,24 +173,6 @@ main {
   gap: 1rem;
 }
 
-.header-bottom::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -0.35rem;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(153, 161, 173, 0.42) 15%,
-    rgba(218, 224, 232, 0.72) 50%,
-    rgba(153, 161, 173, 0.42) 85%,
-    transparent 100%
-  );
-  pointer-events: none;
-}
-
 .brand-mark {
   font-weight: 800;
   font-size: 1.05rem;
