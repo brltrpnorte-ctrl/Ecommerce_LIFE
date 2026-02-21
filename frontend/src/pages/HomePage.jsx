@@ -57,7 +57,6 @@ export function HomePage() {
         <div className="hero-overlay" />
         <div className="container hero-content">
           <p className="eyebrow">Loja oficial LIFE Style</p>
-          <h1>{activeSlide.title}</h1>
           <p>{activeSlide.subtitle}</p>
           <div className="hero-actions">
             <Link to="/produtos" className="btn-primary">
