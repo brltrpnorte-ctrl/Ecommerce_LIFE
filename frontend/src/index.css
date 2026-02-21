@@ -149,10 +149,9 @@ main {
   justify-content: center;
   position: relative;
   color: rgba(75, 78, 76, 1);
-  background-color: rgba(95, 95, 95, 1);
   margin-right: 56px;
-  width: 883px;
-  height: 99px;
+  width: auto;
+  height: auto;
 }
 
 @media (max-width: 991px) {
