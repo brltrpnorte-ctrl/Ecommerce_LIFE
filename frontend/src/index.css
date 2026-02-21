@@ -154,6 +154,8 @@ main {
   color: rgba(75, 78, 76, 1);
   background-color: rgba(95, 95, 95, 1);
   margin-right: 56px;
+  width: 883px;
+  height: 99px;
 }
 
 @media (max-width: 991px) {
