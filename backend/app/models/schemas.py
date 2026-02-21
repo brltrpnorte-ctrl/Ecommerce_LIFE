@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 PIPELINE_STAGE_LITERAL = Literal['lead', 'qualificado', 'proposta', 'negociacao', 'fechado-ganho', 'fechado-perdido']
@@ -21,7 +22,29 @@ class Product(BaseModel):
     stock: int
     rating: float = Field(ge=0, le=5)
     featured: bool = False
+    promo_tag: str | None = Field(default=None, max_length=80)
     media: list[str]
+
+    @field_validator('slug')
+    @classmethod
+    def validate_slug(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if not re.fullmatch(r'[a-z0-9-]{3,120}', normalized):
+            raise ValueError('Slug invalido')
+        return normalized
+
+    @field_validator('media')
+    @classmethod
+    def validate_media(cls, value: list[str]) -> list[str]:
+        if not value:
+            raise ValueError('Produto precisa de pelo menos 1 midia')
+        normalized_items: list[str] = []
+        for item in value:
+            url = item.strip()
+            if not url.startswith(('http://', 'https://')):
+                raise ValueError('URL de midia invalida')
+            normalized_items.append(url)
+        return normalized_items
 
 
 class ProductListResponse(BaseModel):
@@ -29,6 +52,307 @@ class ProductListResponse(BaseModel):
     total: int
     page: int
     page_size: int
+
+
+class CategoryRecord(BaseModel):
+    slug: str = Field(min_length=2, max_length=80)
+    label: str = Field(min_length=2, max_length=80)
+
+    @field_validator('slug')
+    @classmethod
+    def validate_category_slug(cls, value: str) -> str:
+        normalized = value.strip().lower()
+        if not re.fullmatch(r'[a-z0-9-]{2,80}', normalized):
+            raise ValueError('Slug de categoria invalido')
+        return normalized
+
+    @field_validator('label')
+    @classmethod
+    def validate_label(cls, value: str) -> str:
+        return value.strip()
+
+
+class CategoryListResponse(BaseModel):
+    items: list[str]
+    labels: dict[str, str]
+
+
+class BrandListResponse(BaseModel):
+    items: list[str]
+
+
+HeroMediaType = Literal['image', 'video']
+StoryMediaType = Literal['image', 'video']
+
+
+class HeroSlideRecord(BaseModel):
+    id: int = Field(ge=1)
+    title: str = Field(min_length=4, max_length=180)
+    subtitle: str = Field(min_length=4, max_length=280)
+    cta: str = Field(min_length=2, max_length=80)
+    media_type: HeroMediaType = 'image'
+    media_url: str = Field(min_length=8, max_length=600)
+
+    @field_validator('media_url')
+    @classmethod
+    def validate_media_url(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized.startswith(('http://', 'https://')):
+            raise ValueError('URL de midia invalida')
+        return normalized
+
+
+class StoryItemRecord(BaseModel):
+    id: int = Field(ge=1)
+    title: str = Field(min_length=2, max_length=180)
+    type: StoryMediaType = 'image'
+    src: str = Field(min_length=8, max_length=600)
+    text: str = Field(min_length=2, max_length=420)
+
+    @field_validator('src')
+    @classmethod
+    def validate_story_src(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized.startswith(('http://', 'https://')):
+            raise ValueError('URL de midia invalida')
+        return normalized
+
+
+class SiteTextContent(BaseModel):
+    hero_eyebrow: str = Field(min_length=2, max_length=120)
+    presentation_title: str = Field(min_length=4, max_length=180)
+    presentation_body: str = Field(min_length=8, max_length=420)
+    featured_title: str = Field(min_length=3, max_length=120)
+    featured_link_label: str = Field(min_length=2, max_length=60)
+    hologram_eyebrow: str = Field(min_length=2, max_length=120)
+    hologram_title: str = Field(min_length=4, max_length=180)
+    hologram_body: str = Field(min_length=8, max_length=420)
+    story_eyebrow: str = Field(min_length=2, max_length=120)
+    story_title: str = Field(min_length=4, max_length=180)
+
+
+MediaAssetType = Literal['image', 'video']
+
+
+class MediaAsset(BaseModel):
+    id: int = Field(ge=1)
+    type: MediaAssetType
+    url: str = Field(min_length=8, max_length=600)
+    thumbnail_url: str | None = Field(default=None, min_length=8, max_length=600)
+    alt: str | None = Field(default=None, max_length=180)
+    folder: str | None = Field(default=None, max_length=120)
+    tags: list[str] = Field(default_factory=list, max_length=50)
+    created_at: str | None = None
+
+    @field_validator('url')
+    @classmethod
+    def validate_url(cls, value: str) -> str:
+        normalized = value.strip()
+        if not normalized.startswith(('http://', 'https://')):
+            raise ValueError('URL de midia invalida')
+        return normalized
+
+    @field_validator('thumbnail_url')
+    @classmethod
+    def validate_thumbnail_url(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = value.strip()
+        if not normalized.startswith(('http://', 'https://')):
+            raise ValueError('URL de thumbnail invalida')
+        return normalized
+
+    @field_validator('tags')
+    @classmethod
+    def validate_tags(cls, value: list[str]) -> list[str]:
+        clean: list[str] = []
+        seen: set[str] = set()
+        for item in value:
+            tag = item.strip().lower()
+            if not tag or tag in seen:
+                continue
+            if not re.fullmatch(r'[a-z0-9-]{2,40}', tag):
+                continue
+            seen.add(tag)
+            clean.append(tag)
+        return clean
+
+
+BannerSegment = Literal['all', 'desktop', 'mobile']
+BannerStatus = Literal['draft', 'published']
+
+
+class BannerRecord(BaseModel):
+    id: int = Field(ge=1)
+    type: MediaAssetType
+    media_id: int = Field(ge=1)
+    poster_media_id: int | None = Field(default=None, ge=1)
+    title: str = Field(min_length=2, max_length=180)
+    subtitle: str = Field(min_length=2, max_length=280)
+    phrase: str | None = Field(default=None, max_length=240)
+    cta_text: str | None = Field(default=None, max_length=80)
+    cta_link: str | None = Field(default=None, max_length=420)
+    order: int = Field(default=1, ge=1, le=1000)
+    segment: BannerSegment = 'all'
+    start_at: str | None = Field(default=None, max_length=40)
+    end_at: str | None = Field(default=None, max_length=40)
+    status: BannerStatus = 'published'
+
+
+HologramIntensity = Literal['suave', 'medio', 'forte']
+HologramSpeed = Literal['lento', 'normal', 'rapido']
+
+
+class HologramConfig(BaseModel):
+    enabled: bool = True
+    items: list[int] = Field(default_factory=list, description='media ids')
+    intensity: HologramIntensity = 'medio'
+    rotation_speed: HologramSpeed = 'normal'
+    glow_color: str = Field(default='#2aff6d', max_length=20)
+    performance_mode: bool = True
+    fallback_media_id: int | None = Field(default=None, ge=1)
+
+
+class PolaroidRecord(BaseModel):
+    id: int = Field(ge=1)
+    media_id: int = Field(ge=1)
+    caption: str = Field(min_length=2, max_length=140)
+    story: str = Field(min_length=2, max_length=2000)
+    collection_tag: str | None = Field(default=None, max_length=120)
+    date: str | None = Field(default=None, max_length=40)
+    order: int = Field(default=1, ge=1, le=5000)
+    featured: bool = False
+    modal_enabled: bool = True
+
+
+class GlobalContent(BaseModel):
+    main_slogan: str = Field(default='Lifestyle Store', max_length=180)
+    footer_text: str = Field(default='Lifestyle Store', max_length=280)
+    whatsapp_link: str | None = Field(default=None, max_length=420)
+    instagram_link: str | None = Field(default=None, max_length=420)
+    terms: str = Field(default='', max_length=12000)
+    privacy: str = Field(default='', max_length=12000)
+    lgpd: str = Field(default='', max_length=12000)
+    faq: list[dict[str, str]] = Field(default_factory=list)
+
+
+HomeSectionType = Literal['hero', 'presentation', 'featured', 'hologram', 'story']
+
+
+class HomeSection(BaseModel):
+    id: str = Field(min_length=2, max_length=60)
+    type: HomeSectionType
+    enabled: bool = True
+    order: int = Field(default=1, ge=1, le=1000)
+    props: dict[str, Any] = Field(default_factory=dict)
+
+
+class SiteContent(BaseModel):
+    hero_slides: list[HeroSlideRecord] = Field(min_length=1, max_length=12)
+    story_gallery: list[StoryItemRecord] = Field(min_length=1, max_length=24)
+    texts: SiteTextContent
+
+    media_library: list[MediaAsset] = Field(default_factory=list, max_length=500)
+    banners: list[BannerRecord] = Field(default_factory=list, max_length=40)
+    home_sections: list[HomeSection] = Field(default_factory=list, max_length=40)
+    hologram: HologramConfig = Field(default_factory=HologramConfig)
+    polaroids: list[PolaroidRecord] = Field(default_factory=list, max_length=80)
+    global_content: GlobalContent = Field(default_factory=GlobalContent)
+
+    @model_validator(mode='after')
+    def ensure_unique_ids(self) -> 'SiteContent':
+        hero_ids = [item.id for item in self.hero_slides]
+        story_ids = [item.id for item in self.story_gallery]
+        if len(hero_ids) != len(set(hero_ids)):
+            raise ValueError('IDs duplicados em hero_slides')
+        if len(story_ids) != len(set(story_ids)):
+            raise ValueError('IDs duplicados em story_gallery')
+
+        media_ids = [item.id for item in self.media_library]
+        if len(media_ids) != len(set(media_ids)):
+            raise ValueError('IDs duplicados em media_library')
+
+        banner_ids = [item.id for item in self.banners]
+        if len(banner_ids) != len(set(banner_ids)):
+            raise ValueError('IDs duplicados em banners')
+
+        polaroid_ids = [item.id for item in self.polaroids]
+        if len(polaroid_ids) != len(set(polaroid_ids)):
+            raise ValueError('IDs duplicados em polaroids')
+
+        section_ids = [item.id for item in self.home_sections]
+        if len(section_ids) != len(set(section_ids)):
+            raise ValueError('IDs duplicados em home_sections')
+
+        media_id_set = set(media_ids)
+        for banner in self.banners:
+            if media_id_set and banner.media_id not in media_id_set:
+                raise ValueError(f'Banner {banner.id} referencia media_id inexistente')
+            if banner.type == 'video' and banner.poster_media_id is not None and media_id_set and banner.poster_media_id not in media_id_set:
+                raise ValueError(f'Banner {banner.id} referencia poster_media_id inexistente')
+
+        for polaroid in self.polaroids:
+            if media_id_set and polaroid.media_id not in media_id_set:
+                raise ValueError(f'Polaroid {polaroid.id} referencia media_id inexistente')
+
+        return self
+
+
+class CatalogContent(BaseModel):
+    categories: list[CategoryRecord] = Field(min_length=1, max_length=80)
+    brands: list[str] = Field(min_length=1, max_length=120)
+    products: list[Product] = Field(min_length=1, max_length=600)
+
+    @field_validator('brands')
+    @classmethod
+    def validate_brands(cls, values: list[str]) -> list[str]:
+        seen: set[str] = set()
+        clean: list[str] = []
+        for item in values:
+            value = item.strip()
+            if not value:
+                continue
+            lowered = value.lower()
+            if lowered in seen:
+                continue
+            seen.add(lowered)
+            clean.append(value)
+        if not clean:
+            raise ValueError('Informe ao menos uma marca valida')
+        return clean
+
+    @model_validator(mode='after')
+    def validate_cross_references(self) -> 'CatalogContent':
+        category_slugs = [item.slug for item in self.categories]
+        if len(category_slugs) != len(set(category_slugs)):
+            raise ValueError('Categorias duplicadas por slug')
+
+        brand_names = {item.lower() for item in self.brands}
+        product_ids = [item.id for item in self.products]
+        product_slugs = [item.slug for item in self.products]
+        if len(product_ids) != len(set(product_ids)):
+            raise ValueError('Produtos com id duplicado')
+        if len(product_slugs) != len(set(product_slugs)):
+            raise ValueError('Produtos com slug duplicado')
+
+        allowed_categories = set(category_slugs)
+        for product in self.products:
+            if product.category not in allowed_categories:
+                raise ValueError(f'Produto "{product.slug}" usa categoria inexistente: {product.category}')
+            if product.brand.lower() not in brand_names:
+                raise ValueError(f'Produto "{product.slug}" usa marca inexistente: {product.brand}')
+        return self
+
+
+class AdminContentUpdateRequest(BaseModel):
+    site_content: SiteContent
+    catalog: CatalogContent
+
+
+class AdminContentResponse(BaseModel):
+    site_content: SiteContent
+    catalog: CatalogContent
+    updated_at: str
 
 
 class ShippingQuoteRequest(BaseModel):

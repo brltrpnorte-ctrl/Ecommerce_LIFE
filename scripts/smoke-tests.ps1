@@ -1,4 +1,4 @@
-# Smoke tests for Ecommerce_LIFE API (Core + CRM)
+# Smoke tests for Lifestyle Store API (Core + CRM)
 # Usage:
 #   powershell -ExecutionPolicy Bypass -File .\scripts\smoke-tests.ps1
 # Requires API running at $BaseUrl
@@ -75,6 +75,25 @@ ExpectStatus 'admin_invalid_token_401' {
 SafeInvoke 'admin_valid_token' {
     Invoke-RestMethod -Uri "$BaseUrl/admin/overview" -Headers @{ 'X-Admin-Token' = $adminToken } -Method Get
 } | Out-Null
+
+SafeInvoke 'site_content_public' {
+    Invoke-RestMethod -Uri "$BaseUrl/site/content" -Method Get
+} | Out-Null
+
+$adminContent = SafeInvoke 'admin_content_get' {
+    Invoke-RestMethod -Uri "$BaseUrl/admin/content" -Headers @{ 'X-Admin-Token' = $adminToken } -Method Get
+}
+
+if ($adminContent -and $adminContent.site_content -and $adminContent.catalog) {
+    $adminContentPayload = @{
+        site_content = $adminContent.site_content
+        catalog      = $adminContent.catalog
+    } | ConvertTo-Json -Depth 12
+
+    SafeInvoke 'admin_content_put_roundtrip' {
+        Invoke-RestMethod -Uri "$BaseUrl/admin/content" -Headers @{ 'X-Admin-Token' = $adminToken } -Method Put -Body $adminContentPayload -ContentType 'application/json'
+    } | Out-Null
+}
 
 $shipPayload = @{ zip_code = '04129-060'; subtotal = 199.99; weight_kg = 2.4 } | ConvertTo-Json
 SafeInvoke 'shipping_quote' { Invoke-RestMethod -Uri "$BaseUrl/shipping/quote" -Method Post -Body $shipPayload -ContentType 'application/json' } | Out-Null

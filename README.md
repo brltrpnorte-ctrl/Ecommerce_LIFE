@@ -1,4 +1,4 @@
-# Ecommerce LIFE
+# Lifestyle Store
 
 Loja de roupas premium com storytelling visual, animações avançadas e foco em conversão.
 
@@ -92,3 +92,48 @@ Use o valor de `AUTH_TOKEN` em `backend/.env` na pagina `/admin`.
 3. Integracao real de pagamento (Pix/cartao/boleto) e frete.
 4. Painel CMS completo para banners/galerias/promocoes.
 5. Observabilidade, testes E2E e hardening OWASP para go-live.
+
+
+## 📋 Roadmap - Painel CMS Completo
+
+### Objetivo
+100% do conteúdo editável pelo admin (banners, fotos, vídeos, textos, layout)
+
+### Documentação Completa
+- **[ADMIN_CMS_SPEC.md](ADMIN_CMS_SPEC.md)** - Especificação técnica completa
+- **[ROADMAP_CMS.md](ROADMAP_CMS.md)** - Timeline e fases de implementação
+- **[DOCS_INDEX.md](DOCS_INDEX.md)** - Índice de toda documentação
+
+### Stack Recomendado
+- Commerce: Saleor (Django + GraphQL)
+- CMS: Strapi v4 (Node.js + PostgreSQL)
+- Admin UI: Next.js + shadcn/ui
+- Mídia: Cloudflare R2 + CDN
+
+### Timeline: 5-6 meses (10 fases)
+
+**Fase 1-2:** Biblioteca de mídia + banners editáveis (4-6 semanas)
+**Fase 3-4:** Commerce + promoções (4-5 semanas)
+**Fase 5-6:** Vendas + financeiro (5 semanas)
+**Fase 7-8:** CRM + segurança (4-5 semanas)
+**Fase 9-10:** Otimização + go-live (3 semanas)
+
+### Funcionalidades do Painel CMS
+
+✅ Biblioteca de mídia (upload, organização, otimização)
+✅ Banners com foto/vídeo editáveis
+✅ Page builder (drag & drop seções)
+✅ Config holograma (mídias, intensidade, cores)
+✅ Galeria polaroid gerenciável
+✅ Textos globais editáveis
+✅ Categorias com extensões CMS
+✅ Promoções programáveis
+✅ Pipeline de pedidos visual
+✅ Gestão de frete e rastreio
+✅ Trocas e devoluções
+✅ Financeiro com relatórios
+✅ CRM e segmentação
+✅ Carrinho abandonado
+✅ Cupons e descontos
+✅ Permissões e auditoria
+✅ Exportações (CSV/Excel/PDF)

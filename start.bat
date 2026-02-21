@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo Ecommerce LIFE - Inicializacao Completa
+echo Lifestyle Store - Inicializacao Completa
 echo ========================================
 echo.
 

@@ -4,7 +4,13 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function HologramShowcase() {
+const defaultCopy = {
+  eyebrow: 'Holograma Lifestyle Store',
+  title: 'Emblema de 4 folhas como tapete de projecao 3D',
+  body: 'A vitrine central projeta fotos e videos em camadas, simulando elevacao holografica do catalogo.',
+}
+
+export function HologramShowcase({ copy = defaultCopy }) {
   const sectionRef = useRef(null)
 
   useEffect(() => {
@@ -45,11 +51,9 @@ export function HologramShowcase() {
   return (
     <section className="hologram-block" ref={sectionRef}>
       <div className="hologram-label">
-        <p className="eyebrow">Holograma LIFE</p>
-        <h2>Emblema de 4 folhas como tapete de projecao 3D</h2>
-        <p>
-          A vitrine central projeta fotos e videos em camadas, simulando elevacao holografica do catalogo.
-        </p>
+        <p className="eyebrow">{copy.eyebrow || defaultCopy.eyebrow}</p>
+        <h2>{copy.title || defaultCopy.title}</h2>
+        <p>{copy.body || defaultCopy.body}</p>
       </div>
 
       <div className="hologram-stage" aria-label="Projecao holografica do emblema">
