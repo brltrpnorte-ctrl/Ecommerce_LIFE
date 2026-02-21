@@ -31,6 +31,7 @@ export const api = {
     return fetchJson(`/products${suffix}`)
   },
   getProductBySlug: (slug) => fetchJson(`/products/${slug}`),
+  getSiteContent: () => fetchJson('/site/content'),
   getCategories: () => fetchJson('/categories'),
   getBrands: () => fetchJson('/brands'),
   getShippingQuote: (payload) =>
@@ -48,5 +49,19 @@ export const api = {
       headers: {
         'X-Admin-Token': token,
       },
+    }),
+  getAdminContent: (token) =>
+    fetchJson('/admin/content', {
+      headers: {
+        'X-Admin-Token': token,
+      },
+    }),
+  updateAdminContent: (token, payload) =>
+    fetchJson('/admin/content', {
+      method: 'PUT',
+      headers: {
+        'X-Admin-Token': token,
+      },
+      body: JSON.stringify(payload),
     }),
 }

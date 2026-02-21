@@ -9,8 +9,9 @@ export function ProductCard({ product }) {
         <p className="product-brand">{product.brand}</p>
         <h3>{product.name}</h3>
         <p className="product-meta">
-          {product.category} · estoque {product.stock}
+          {product.category} - estoque {product.stock}
         </p>
+        {product.promo_tag ? <p className="product-promo">{product.promo_tag}</p> : null}
         <div className="product-footer">
           <strong>{formatCurrency(product.price)}</strong>
           <Link to={`/produto/${product.slug}`}>Ver produto</Link>
