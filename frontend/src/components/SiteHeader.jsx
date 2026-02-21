@@ -18,10 +18,10 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <div className="header-layout">
+      <div className="header-layout container">
         <div className="header-grid">
           <div className="header-column">
-            <div className="container header-inner">
+            <div className="header-inner">
               <div className="header-bottom">
                 <NavLink to="/" className="brand-mark" onClick={() => setOpen(false)}>
                   LIFE <span>Style Store</span>

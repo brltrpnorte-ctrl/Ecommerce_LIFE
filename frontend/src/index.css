@@ -145,8 +145,8 @@ main {
 
 .logo-section {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  justify-content: flex-start;
   position: relative;
   color: rgba(75, 78, 76, 1);
   margin-right: 56px;
