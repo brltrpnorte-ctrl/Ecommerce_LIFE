@@ -132,11 +132,48 @@ main {
   top: 0;
   z-index: 50;
   backdrop-filter: blur(10px);
-  background:
-    linear-gradient(102deg, rgba(212, 218, 228, 0.08) 0%, transparent 23%),
-    linear-gradient(258deg, rgba(161, 170, 182, 0.07) 0%, transparent 26%),
-    rgba(3, 7, 7, 0.84);
+  background-color: rgba(95, 95, 95, 1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.header-grid {
+  display: flex;
+  gap: 20px;
+}
+
+.header-column {
+  display: flex;
+  flex-direction: column;
+  line-height: normal;
+  width: 50%;
+  margin-left: 0;
+}
+
+.header-column-right {
+  margin-left: 20px;
+}
+
+.logo-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  color: rgba(75, 78, 76, 1);
+  margin-right: 56px;
+  width: auto;
+  height: auto;
+}
+
+@media (max-width: 991px) {
+  .header-grid {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .header-column {
+    width: 100%;
+    margin-left: 0 !important;
+  }
 }
 
 .header-inner {
@@ -319,7 +356,9 @@ main {
 
 .hero {
   position: relative;
-  min-height: 78vh;
+  min-height: 739px;
+  background-size: cover;
+  background-position: 50% 50%;
   overflow: hidden;
 }
 

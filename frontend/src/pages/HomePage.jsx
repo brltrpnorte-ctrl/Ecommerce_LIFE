@@ -189,7 +189,6 @@ export function HomePage() {
   const activeSlide = slides[safeCurrent] || slides[0]
   const heroMediaType = activeSlide?.media_type || 'image'
   const heroMediaUrl = activeSlide?.media_url || ''
-  const heroTitle = activeSlide?.title || defaultSiteContent.hero_slides[0].title
   const heroSubtitle = activeSlide?.subtitle || defaultSiteContent.hero_slides[0].subtitle
   const heroCta = activeSlide?.cta || defaultSiteContent.hero_slides[0].cta
 
@@ -213,7 +212,6 @@ export function HomePage() {
         <div className="hero-overlay" />
         <div className="container hero-content">
           <p className="eyebrow">{texts.hero_eyebrow || defaultSiteContent.texts.hero_eyebrow}</p>
-          <h1>{heroTitle}</h1>
           <p>{heroSubtitle}</p>
           <div className="hero-actions">
             <Link to="/produtos" className="btn-primary">

@@ -42,71 +42,78 @@ export function SiteHeader() {
 
   return (
     <header className="site-header">
-      <div className="container header-inner">
-        <div className="header-top">
-          <NavLink to="/" className="header-logo-link" onClick={() => setMenuOpen(false)} aria-label="Pagina inicial">
-            <img className="header-logo" src={lifeLogo} alt="Lifestyle Store" />
-          </NavLink>
-        </div>
-
-        <div className="header-bottom">
-          <NavLink to="/" className="brand-mark" onClick={() => setMenuOpen(false)}>
-            Lifestyle <span>Store</span>
-          </NavLink>
-
-          <div className="header-controls">
-            <nav className="primary-nav" aria-label="Navegacao principal">
-              {primaryLinks.map((link) => (
-                <NavLink
-                  key={link.to}
-                  to={link.to}
-                  className={({ isActive }) => (isActive ? 'active' : '')}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {link.label}
+      <div className="header-layout container">
+        <div className="header-grid">
+          <div className="header-column">
+            <div className="header-inner">
+              <div className="header-bottom">
+                <NavLink to="/" className="brand-mark" onClick={() => setMenuOpen(false)}>
+                  Lifestyle <span>Store</span>
                 </NavLink>
-              ))}
-              <NavLink to="/login" className="auth-pill" onClick={() => setMenuOpen(false)}>
-                Entrar
+
+                <div className="header-controls">
+                  <nav className="primary-nav" aria-label="Navegacao principal">
+                    {primaryLinks.map((link) => (
+                      <NavLink
+                        key={link.to}
+                        to={link.to}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {link.label}
+                      </NavLink>
+                    ))}
+                    <NavLink to="/login" className="auth-pill" onClick={() => setMenuOpen(false)}>
+                      Entrar
+                    </NavLink>
+                  </nav>
+
+                  <div className="header-menu-wrap">
+                    <button
+                      className="icon-menu-toggle"
+                      type="button"
+                      onClick={() => setMenuOpen((value) => !value)}
+                      aria-label="Abrir menu de opcoes"
+                      aria-controls="header-action-menu"
+                      aria-expanded={menuOpen}
+                    >
+                      <span className="menu-icon" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </span>
+                    </button>
+
+                    <nav id="header-action-menu" className={`action-menu ${menuOpen ? 'open' : ''}`} aria-label="Menu secundario">
+                      {menuLinks.map((link) => (
+                        <NavLink
+                          key={link.to}
+                          to={link.to}
+                          className={({ isActive }) => (isActive ? 'active' : '')}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {link.label}
+                        </NavLink>
+                      ))}
+                      {hasAdminAccess ? (
+                        <NavLink to="/admin" onClick={() => setMenuOpen(false)}>
+                          Admin
+                        </NavLink>
+                      ) : null}
+                      <NavLink to="/checkout" className="menu-cart-pill" onClick={() => setMenuOpen(false)}>
+                        Carrinho ({totalItems})
+                      </NavLink>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="header-column header-column-right">
+            <div className="logo-section">
+              <NavLink to="/" className="header-logo-link" onClick={() => setMenuOpen(false)} aria-label="Pagina inicial">
+                <img className="header-logo ml-auto" src={lifeLogo} alt="Lifestyle Store" />
               </NavLink>
-            </nav>
-
-            <div className="header-menu-wrap">
-              <button
-                className="icon-menu-toggle"
-                type="button"
-                onClick={() => setMenuOpen((value) => !value)}
-                aria-label="Abrir menu de opcoes"
-                aria-controls="header-action-menu"
-                aria-expanded={menuOpen}
-              >
-                <span className="menu-icon" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                </span>
-              </button>
-
-              <nav id="header-action-menu" className={`action-menu ${menuOpen ? 'open' : ''}`} aria-label="Menu secundario">
-                {menuLinks.map((link) => (
-                  <NavLink
-                    key={link.to}
-                    to={link.to}
-                    className={({ isActive }) => (isActive ? 'active' : '')}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {link.label}
-                  </NavLink>
-                ))}
-                {hasAdminAccess ? (
-                  <NavLink to="/admin" onClick={() => setMenuOpen(false)}>
-                    Admin
-                  </NavLink>
-                ) : null}
-                <NavLink to="/checkout" className="menu-cart-pill" onClick={() => setMenuOpen(false)}>
-                  Carrinho ({totalItems})
-                </NavLink>
-              </nav>
             </div>
           </div>
         </div>
