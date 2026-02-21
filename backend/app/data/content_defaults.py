@@ -203,6 +203,7 @@ DEFAULT_CATALOG = {
 }
 
 DEFAULT_SITE_CONTENT = {
+    # v1 payload (compat)
     'hero_slides': [
         {
             'id': 1,
@@ -263,5 +264,118 @@ DEFAULT_SITE_CONTENT = {
         'hologram_body': 'A vitrine central projeta fotos e videos em camadas, simulando elevacao holografica do catalogo.',
         'story_eyebrow': 'Nossa Historia',
         'story_title': 'Galeria polaroid com sentimento e memoria',
+    },
+
+    # v2 CMS payload
+    'media_library': [
+        {
+            'id': 1,
+            'type': 'image',
+            'url': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1400&q=80',
+            'thumbnail_url': 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=400&q=60',
+            'alt': 'Modelo com camisa oversized',
+            'folder': 'banners-home',
+            'tags': ['banner', 'home'],
+        },
+        {
+            'id': 2,
+            'type': 'image',
+            'url': 'https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=1400&q=80',
+            'thumbnail_url': 'https://images.unsplash.com/photo-1551232864-3f0890e580d9?auto=format&fit=crop&w=400&q=60',
+            'alt': 'Look lifestyle',
+            'folder': 'banners-home',
+            'tags': ['banner', 'home'],
+        },
+        {
+            'id': 3,
+            'type': 'video',
+            'url': 'https://cdn.coverr.co/videos/coverr-fashion-model-posing-4887/1080p.mp4',
+            'thumbnail_url': None,
+            'alt': 'Video campanha',
+            'folder': 'banners-home',
+            'tags': ['banner', 'video'],
+        },
+        {
+            'id': 10,
+            'type': 'image',
+            'url': 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1200&q=80',
+            'thumbnail_url': 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=400&q=60',
+            'alt': 'Polaroid 1',
+            'folder': 'polaroids',
+            'tags': ['story', 'polaroid'],
+        },
+    ],
+    'banners': [
+        {
+            'id': 1,
+            'type': 'image',
+            'media_id': 1,
+            'poster_media_id': None,
+            'title': 'Moda com historia, atitude e identidade',
+            'subtitle': 'Colecoes que transformam cada visual em narrativa.',
+            'phrase': None,
+            'cta_text': 'Explorar Galeria',
+            'cta_link': '/#story',
+            'order': 1,
+            'segment': 'all',
+            'start_at': None,
+            'end_at': None,
+            'status': 'published',
+        },
+        {
+            'id': 2,
+            'type': 'video',
+            'media_id': 3,
+            'poster_media_id': 2,
+            'title': 'Drops exclusivos para converter vendas',
+            'subtitle': 'Catalogo premium com checkout simples e rapido.',
+            'phrase': None,
+            'cta_text': 'Comprar Agora',
+            'cta_link': '/produtos',
+            'order': 2,
+            'segment': 'all',
+            'start_at': None,
+            'end_at': None,
+            'status': 'published',
+        },
+    ],
+    'home_sections': [
+        {'id': 'hero', 'type': 'hero', 'enabled': True, 'order': 1, 'props': {}},
+        {'id': 'presentation', 'type': 'presentation', 'enabled': True, 'order': 2, 'props': {}},
+        {'id': 'featured', 'type': 'featured', 'enabled': True, 'order': 3, 'props': {}},
+        {'id': 'hologram', 'type': 'hologram', 'enabled': True, 'order': 4, 'props': {}},
+        {'id': 'story', 'type': 'story', 'enabled': True, 'order': 5, 'props': {}},
+    ],
+    'hologram': {
+        'enabled': True,
+        'items': [1, 2, 3],
+        'intensity': 'medio',
+        'rotation_speed': 'normal',
+        'glow_color': '#2aff6d',
+        'performance_mode': True,
+        'fallback_media_id': 2,
+    },
+    'polaroids': [
+        {
+            'id': 1,
+            'media_id': 10,
+            'caption': 'Origem da Marca',
+            'story': 'Cada peca nasce de historias urbanas e autenticidade.',
+            'collection_tag': 'manifesto',
+            'date': None,
+            'order': 1,
+            'featured': True,
+            'modal_enabled': True,
+        }
+    ],
+    'global_content': {
+        'main_slogan': 'Lifestyle Store',
+        'footer_text': '© Lifestyle Store — Todos os direitos reservados',
+        'whatsapp_link': None,
+        'instagram_link': None,
+        'terms': '',
+        'privacy': '',
+        'lgpd': '',
+        'faq': [],
     },
 }

@@ -1,5 +1,5 @@
-# Setup completo do Ecommerce LIFE
-Write-Host "=== Ecommerce LIFE - Setup ===" -ForegroundColor Green
+# Setup completo do Lifestyle Store
+Write-Host "=== Lifestyle Store - Setup ===" -ForegroundColor Green
 
 # 1. Gerar token seguro
 Write-Host "`n[1/3] Gerando token seguro..." -ForegroundColor Cyan

@@ -1,5 +1,5 @@
 # Inicia Backend e Frontend simultaneamente
-Write-Host "=== Ecommerce LIFE - Iniciando Servicos ===" -ForegroundColor Green
+Write-Host "=== Lifestyle Store - Iniciando Servicos ===" -ForegroundColor Green
 
 # Backend
 Write-Host "`nIniciando Backend..." -ForegroundColor Cyan

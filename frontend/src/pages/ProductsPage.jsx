@@ -5,6 +5,7 @@ import { categoryLabels } from '../data/siteContent.js'
 
 export function ProductsPage() {
   const [categories, setCategories] = useState([])
+  const [categoryLabelMap, setCategoryLabelMap] = useState(categoryLabels)
   const [brands, setBrands] = useState([])
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -23,7 +24,9 @@ export function ProductsPage() {
     Promise.all([api.getCategories(), api.getBrands()])
       .then(([categoryResponse, brandResponse]) => {
         if (isMounted) {
-          setCategories(categoryResponse.items)
+          const labelsFromApi = categoryResponse.labels || {}
+          setCategoryLabelMap((state) => ({ ...state, ...labelsFromApi }))
+          setCategories(Array.isArray(categoryResponse.items) ? categoryResponse.items : [])
           setBrands(brandResponse.items)
         }
       })
@@ -31,6 +34,7 @@ export function ProductsPage() {
         if (isMounted) {
           setCategories([])
           setBrands([])
+          setCategoryLabelMap(categoryLabels)
         }
       })
 
@@ -96,7 +100,7 @@ export function ProductsPage() {
           <option value="">Todas categorias</option>
           {categories.map((item) => (
             <option key={item} value={item}>
-              {categoryLabels[item] || item}
+              {categoryLabelMap[item] || item}
             </option>
           ))}
         </select>

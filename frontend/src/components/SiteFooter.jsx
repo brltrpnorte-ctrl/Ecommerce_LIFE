@@ -3,7 +3,7 @@ export function SiteFooter() {
     <footer className="site-footer">
       <div className="container footer-grid">
         <div>
-          <h4>LIFE Style Store</h4>
+          <h4>Lifestyle Store</h4>
           <p>Moda premium com storytelling visual e compra simplificada.</p>
         </div>
         <div>

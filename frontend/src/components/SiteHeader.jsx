@@ -1,20 +1,44 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink } from 'react-router-dom'
 import { useCart } from '../context/useCart.js'
 import lifeLogo from '../assets/life-logo.svg'
 
-const links = [
+const ADMIN_ACCESS_KEY = 'ecommerce_life_admin_access'
+
+const primaryLinks = [
   { label: 'Inicio', to: '/' },
   { label: 'Produtos', to: '/produtos' },
+]
+
+const menuLinks = [
   { label: 'Checkout', to: '/checkout' },
   { label: 'Minha Conta', to: '/conta' },
   { label: 'Rastreamento', to: '/rastreamento' },
-  { label: 'Admin', to: '/admin' },
+  { label: 'Wishlist', to: '/wishlist' },
 ]
 
 export function SiteHeader() {
-  const [open, setOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [hasAdminAccess, setHasAdminAccess] = useState(false)
   const { totalItems } = useCart()
+
+  useEffect(() => {
+    const syncAccess = () => {
+      if (typeof window === 'undefined') {
+        setHasAdminAccess(false)
+        return
+      }
+      setHasAdminAccess(localStorage.getItem(ADMIN_ACCESS_KEY) === 'true')
+    }
+
+    syncAccess()
+    window.addEventListener('storage', syncAccess)
+    window.addEventListener('admin-access-changed', syncAccess)
+    return () => {
+      window.removeEventListener('storage', syncAccess)
+      window.removeEventListener('admin-access-changed', syncAccess)
+    }
+  }, [])
 
   return (
     <header className="site-header">
@@ -23,44 +47,72 @@ export function SiteHeader() {
           <div className="header-column">
             <div className="header-inner">
               <div className="header-bottom">
-                <NavLink to="/" className="brand-mark" onClick={() => setOpen(false)}>
-                  LIFE <span>Style Store</span>
+                <NavLink to="/" className="brand-mark" onClick={() => setMenuOpen(false)}>
+                  Lifestyle <span>Store</span>
                 </NavLink>
 
-                <button
-                  className="menu-toggle"
-                  type="button"
-                  onClick={() => setOpen((value) => !value)}
-                  aria-label="Abrir menu"
-                >
-                  Menu
-                </button>
-
-                <nav className={`main-nav ${open ? 'open' : ''}`}>
-                  {links.map((link) => (
-                    <NavLink
-                      key={link.to}
-                      to={link.to}
-                      className={({ isActive }) => (isActive ? 'active' : '')}
-                      onClick={() => setOpen(false)}
-                    >
-                      {link.label}
+                <div className="header-controls">
+                  <nav className="primary-nav" aria-label="Navegacao principal">
+                    {primaryLinks.map((link) => (
+                      <NavLink
+                        key={link.to}
+                        to={link.to}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
+                        onClick={() => setMenuOpen(false)}
+                      >
+                        {link.label}
+                      </NavLink>
+                    ))}
+                    <NavLink to="/login" className="auth-pill" onClick={() => setMenuOpen(false)}>
+                      Entrar
                     </NavLink>
-                  ))}
-                  <NavLink to="/checkout" className="cart-pill" onClick={() => setOpen(false)}>
-                    Carrinho ({totalItems})
-                  </NavLink>
-                  <NavLink to="/login" className="auth-pill" onClick={() => setOpen(false)}>
-                    Entrar
-                  </NavLink>
-                </nav>
+                  </nav>
+
+                  <div className="header-menu-wrap">
+                    <button
+                      className="icon-menu-toggle"
+                      type="button"
+                      onClick={() => setMenuOpen((value) => !value)}
+                      aria-label="Abrir menu de opcoes"
+                      aria-controls="header-action-menu"
+                      aria-expanded={menuOpen}
+                    >
+                      <span className="menu-icon" aria-hidden="true">
+                        <span />
+                        <span />
+                        <span />
+                      </span>
+                    </button>
+
+                    <nav id="header-action-menu" className={`action-menu ${menuOpen ? 'open' : ''}`} aria-label="Menu secundario">
+                      {menuLinks.map((link) => (
+                        <NavLink
+                          key={link.to}
+                          to={link.to}
+                          className={({ isActive }) => (isActive ? 'active' : '')}
+                          onClick={() => setMenuOpen(false)}
+                        >
+                          {link.label}
+                        </NavLink>
+                      ))}
+                      {hasAdminAccess ? (
+                        <NavLink to="/admin" onClick={() => setMenuOpen(false)}>
+                          Admin
+                        </NavLink>
+                      ) : null}
+                      <NavLink to="/checkout" className="menu-cart-pill" onClick={() => setMenuOpen(false)}>
+                        Carrinho ({totalItems})
+                      </NavLink>
+                    </nav>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div className="header-column header-column-right">
             <div className="logo-section">
-              <NavLink to="/" className="header-logo-link" onClick={() => setOpen(false)} aria-label="Pagina inicial">
-                <img className="header-logo mx-auto" src={lifeLogo} alt="LIFE Style" />
+              <NavLink to="/" className="header-logo-link" onClick={() => setMenuOpen(false)} aria-label="Pagina inicial">
+                <img className="header-logo mx-auto" src={lifeLogo} alt="Lifestyle Store" />
               </NavLink>
             </div>
           </div>
