@@ -122,10 +122,7 @@ main {
   top: 0;
   z-index: 50;
   backdrop-filter: blur(12px);
-  background:
-    linear-gradient(102deg, rgba(212, 218, 228, 0.08) 0%, transparent 23%),
-    linear-gradient(258deg, rgba(161, 170, 182, 0.07) 0%, transparent 26%),
-    rgba(3, 7, 7, 0.84);
+  background-color: rgba(95, 95, 95, 1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
