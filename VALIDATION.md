@@ -12,7 +12,7 @@
 - [x] Rate limiting (180/60 req/min)
 - [x] Headers de seguranÃ§a (HSTS, CSP, XSS)
 - [x] ValidaÃ§Ãµes de entrada (checkout, frete, produtos)
-- [x] Token seguro gerado: `REDACTED_ADMIN_TOKEN`
+- [x] Token seguro gerado: `<ADMIN_TOKEN>` (nao versionar)
 - [x] Docs desabilitados em produÃ§Ã£o
 - [x] CORS configurado
 
@@ -59,7 +59,7 @@ cd scripts
 
 ### Testar Admin (com novo token)
 ```powershell
-$headers = @{ 'X-Admin-Token' = 'REDACTED_ADMIN_TOKEN' }
+$headers = @{ 'X-Admin-Token' = '<ADMIN_TOKEN>' }
 Invoke-RestMethod -Uri 'http://localhost:8000/api/v1/admin/overview' -Headers $headers
 ```
 
@@ -67,7 +67,7 @@ Invoke-RestMethod -Uri 'http://localhost:8000/api/v1/admin/overview' -Headers $h
 ```powershell
 # Deve bloquear apÃ³s 60 requisiÃ§Ãµes em 1 minuto
 1..70 | ForEach-Object {
-    Invoke-RestMethod -Uri 'http://localhost:8000/api/v1/admin/overview' -Headers @{ 'X-Admin-Token' = 'REDACTED_ADMIN_TOKEN' }
+    Invoke-RestMethod -Uri 'http://localhost:8000/api/v1/admin/overview' -Headers @{ 'X-Admin-Token' = '<ADMIN_TOKEN>' }
 }
 ```
 

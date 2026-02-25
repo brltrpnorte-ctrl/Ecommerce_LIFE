@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import json
 import shutil
-import sqlite3
 import threading
 from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+from app.core.database import AUTO_ID_TABLES, CRM_TABLES, StoreDatabase, ensure_schema
 
 PIPELINE_STAGES = (
     'lead',
@@ -58,7 +59,7 @@ def normalize_tags(tags: list[str]) -> list[str]:
 
 
 class CRMStore:
-    def __init__(self, database_path: str, backup_dir: str) -> None:
+    def __init__(self, database_path: str, backup_dir: str, *, database_url: str | None = None) -> None:
         base_dir = Path(__file__).resolve().parents[2]
         self.db_path = Path(database_path)
         self.backup_dir = Path(backup_dir)
@@ -68,96 +69,24 @@ class CRMStore:
         if not self.backup_dir.is_absolute():
             self.backup_dir = base_dir / self.backup_dir
 
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.backup_dir.mkdir(parents=True, exist_ok=True)
-
         self.write_lock = threading.Lock()
+        self.db = StoreDatabase(database_url=database_url, sqlite_path=self.db_path, auto_id_tables=AUTO_ID_TABLES)
+        if self.db.is_sqlite:
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+            self.backup_dir.mkdir(parents=True, exist_ok=True)
         self._init_schema()
 
     @contextmanager
     def connect(self):
-        conn = sqlite3.connect(self.db_path, check_same_thread=False)
-        conn.row_factory = sqlite3.Row
-        conn.execute('PRAGMA foreign_keys = ON;')
-        try:
+        with self.db.connect() as conn:
             yield conn
-        finally:
-            conn.close()
 
     def _init_schema(self) -> None:
-        with self.connect() as conn:
-            conn.executescript(
-                """
-                CREATE TABLE IF NOT EXISTS contacts (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    name TEXT NOT NULL,
-                    email TEXT NOT NULL UNIQUE,
-                    phone TEXT,
-                    company TEXT,
-                    job_title TEXT,
-                    status TEXT NOT NULL DEFAULT 'lead',
-                    source TEXT NOT NULL DEFAULT 'site',
-                    tags TEXT NOT NULL DEFAULT '[]',
-                    consent INTEGER NOT NULL DEFAULT 1,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
-                );
-
-                CREATE TABLE IF NOT EXISTS leads (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    contact_id INTEGER NOT NULL,
-                    stage TEXT NOT NULL DEFAULT 'lead',
-                    owner TEXT,
-                    estimated_value REAL NOT NULL DEFAULT 0,
-                    close_probability INTEGER NOT NULL DEFAULT 10,
-                    notes TEXT,
-                    is_active INTEGER NOT NULL DEFAULT 1,
-                    last_activity_at TEXT NOT NULL,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL,
-                    FOREIGN KEY(contact_id) REFERENCES contacts(id) ON DELETE CASCADE
-                );
-
-                CREATE TABLE IF NOT EXISTS interactions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    contact_id INTEGER NOT NULL,
-                    lead_id INTEGER,
-                    channel TEXT NOT NULL,
-                    summary TEXT NOT NULL,
-                    metadata TEXT NOT NULL DEFAULT '{}',
-                    created_at TEXT NOT NULL,
-                    FOREIGN KEY(contact_id) REFERENCES contacts(id) ON DELETE CASCADE,
-                    FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE SET NULL
-                );
-
-                CREATE TABLE IF NOT EXISTS tasks (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    lead_id INTEGER NOT NULL,
-                    title TEXT NOT NULL,
-                    due_date TEXT,
-                    done INTEGER NOT NULL DEFAULT 0,
-                    auto_generated INTEGER NOT NULL DEFAULT 0,
-                    created_at TEXT NOT NULL,
-                    updated_at TEXT NOT NULL,
-                    FOREIGN KEY(lead_id) REFERENCES leads(id) ON DELETE CASCADE
-                );
-
-                CREATE TABLE IF NOT EXISTS audit_logs (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    entity TEXT NOT NULL,
-                    entity_id INTEGER,
-                    action TEXT NOT NULL,
-                    performed_by TEXT NOT NULL,
-                    details TEXT NOT NULL DEFAULT '{}',
-                    created_at TEXT NOT NULL
-                );
-                """
-            )
-            conn.commit()
+        ensure_schema(self.db.engine, include='crm')
 
     def _insert_audit(
         self,
-        cur: sqlite3.Cursor,
+        cur: Any,
         *,
         entity: str,
         entity_id: int | None,
@@ -174,6 +103,8 @@ class CRMStore:
         )
 
     def _backup_daily(self) -> None:
+        if not self.db.is_sqlite:
+            return
         if not self.db_path.exists():
             return
         backup_name = f"crm-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.db"
@@ -182,14 +113,28 @@ class CRMStore:
             shutil.copy2(self.db_path, backup_path)
 
     def backup_now(self) -> str:
-        if not self.db_path.exists():
-            raise ValueError('Banco CRM indisponivel')
         timestamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
-        backup_path = self.backup_dir / f'crm-backup-{timestamp}.db'
-        shutil.copy2(self.db_path, backup_path)
+        if self.db.is_sqlite:
+            if not self.db_path.exists():
+                raise ValueError('Banco CRM indisponivel')
+            backup_path = self.backup_dir / f'crm-backup-{timestamp}.db'
+            shutil.copy2(self.db_path, backup_path)
+            return str(backup_path)
+
+        backup_path = self.backup_dir / f'crm-backup-{timestamp}.json'
+        snapshot: dict[str, Any] = {
+            'generated_at': utc_now(),
+            'dialect': self.db.dialect_name,
+            'tables': {},
+        }
+        with self.connect() as conn:
+            for table in CRM_TABLES:
+                rows = conn.execute(f'SELECT * FROM {table.name} ORDER BY id').fetchall()
+                snapshot['tables'][table.name] = rows
+        backup_path.write_text(json.dumps(snapshot, ensure_ascii=True), encoding='utf-8')
         return str(backup_path)
 
-    def _lead_from_row(self, row: sqlite3.Row) -> dict[str, Any]:
+    def _lead_from_row(self, row: Any) -> dict[str, Any]:
         return {
             'id': int(row['id']),
             'contact_id': int(row['contact_id']),
@@ -211,7 +156,7 @@ class CRMStore:
             'updated_at': row['updated_at'],
         }
 
-    def _task_from_row(self, row: sqlite3.Row) -> dict[str, Any]:
+    def _task_from_row(self, row: Any) -> dict[str, Any]:
         return {
             'id': int(row['id']),
             'lead_id': int(row['lead_id']),
@@ -226,7 +171,7 @@ class CRMStore:
             'updated_at': row['updated_at'],
         }
 
-    def _fetch_lead(self, conn: sqlite3.Connection, lead_id: int) -> dict[str, Any]:
+    def _fetch_lead(self, conn: Any, lead_id: int) -> dict[str, Any]:
         row = conn.execute(
             """
             SELECT
@@ -621,7 +566,7 @@ class CRMStore:
             self._backup_daily()
             return self._fetch_task(conn, task_id)
 
-    def _fetch_task(self, conn: sqlite3.Connection, task_id: int) -> dict[str, Any]:
+    def _fetch_task(self, conn: Any, task_id: int) -> dict[str, Any]:
         row = conn.execute(
             """
             SELECT

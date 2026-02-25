@@ -90,7 +90,7 @@ Monitoring: Sentry + Vercel Analytics
 
 ## 🔐 Segurança
 
-Token Admin Atual: `REDACTED_ADMIN_TOKEN`
+Token Admin: configurar via `backend/.env` (`AUTH_TOKEN`) e nao versionar segredo
 
 **Implementações:**
 - ✅ Rate limiting (180/60 req/min)

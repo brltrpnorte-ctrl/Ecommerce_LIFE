@@ -152,6 +152,10 @@ export function AdminPage() {
             <p>{overview.open_orders}</p>
           </article>
           <article className="info-card">
+            <h3>Produtos em promocao</h3>
+            <p>{overview.promo_products ?? 0}</p>
+          </article>
+          <article className="info-card">
             <h3>Receita estimada</h3>
             <p>R$ {overview.estimated_month_revenue.toLocaleString('pt-BR')}</p>
           </article>
@@ -164,6 +168,10 @@ export function AdminPage() {
           <p>
             Altere qualquer conteudo do site neste JSON: hero/carrossel, banners com imagem/video, biblioteca de midia,
             textos, polaroids, ordem de secoes, categorias, marcas, produtos e promocoes.
+          </p>
+          <p className="admin-inline-note">
+            Para colocar um produto na pagina "Promocoes do Dia", preencha o campo <code>promo_tag</code> do produto em
+            <code>catalog.products[]</code>.
           </p>
 
           <textarea

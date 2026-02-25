@@ -21,7 +21,7 @@ cd scripts
 - Backend: http://localhost:8000
 - Docs: http://localhost:8000/docs
 
-**Token Admin:** `REDACTED_ADMIN_TOKEN`
+**Token Admin:** configurar via `backend/.env` (`AUTH_TOKEN`)
 
 ## Stack implementada
 

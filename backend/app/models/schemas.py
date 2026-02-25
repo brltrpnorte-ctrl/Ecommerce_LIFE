@@ -226,8 +226,8 @@ class PolaroidRecord(BaseModel):
 
 
 class GlobalContent(BaseModel):
-    main_slogan: str = Field(default='Lifestyle Store', max_length=180)
-    footer_text: str = Field(default='Lifestyle Store', max_length=280)
+    main_slogan: str = Field(default='LIFE STYLE', max_length=180)
+    footer_text: str = Field(default='LIFE STYLE', max_length=280)
     whatsapp_link: str | None = Field(default=None, max_length=420)
     instagram_link: str | None = Field(default=None, max_length=420)
     terms: str = Field(default='', max_length=12000)

@@ -3,6 +3,7 @@ import { SiteHeader } from './components/SiteHeader.jsx'
 import { SiteFooter } from './components/SiteFooter.jsx'
 import { HomePage } from './pages/HomePage.jsx'
 import { ProductsPage } from './pages/ProductsPage.jsx'
+import { PromotionsPage } from './pages/PromotionsPage.jsx'
 import { ProductDetailsPage } from './pages/ProductDetailsPage.jsx'
 import { CheckoutPage } from './pages/CheckoutPage.jsx'
 import { AccountPage } from './pages/AccountPage.jsx'
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/produtos" element={<ProductsPage />} />
+          <Route path="/promocoes" element={<PromotionsPage />} />
           <Route path="/produto/:slug" element={<ProductDetailsPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/conta" element={<AccountPage />} />

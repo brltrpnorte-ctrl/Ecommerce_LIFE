@@ -254,12 +254,12 @@ DEFAULT_SITE_CONTENT = {
         },
     ],
     'texts': {
-        'hero_eyebrow': 'Loja oficial Lifestyle Store',
+        'hero_eyebrow': 'Loja oficial LIFE STYLE',
         'presentation_title': 'Uma loja de roupas que comunica historia em cada sessao',
         'presentation_body': 'A home foi desenhada como apresentacao de marca, com carrossel, storytelling visual e entrada direta para galerias de produto.',
         'featured_title': 'Destaques para conversao',
         'featured_link_label': 'Ver todos',
-        'hologram_eyebrow': 'Holograma Lifestyle Store',
+        'hologram_eyebrow': 'Holograma LIFE STYLE',
         'hologram_title': 'Emblema de 4 folhas como tapete de projecao 3D',
         'hologram_body': 'A vitrine central projeta fotos e videos em camadas, simulando elevacao holografica do catalogo.',
         'story_eyebrow': 'Nossa Historia',
@@ -369,8 +369,8 @@ DEFAULT_SITE_CONTENT = {
         }
     ],
     'global_content': {
-        'main_slogan': 'Lifestyle Store',
-        'footer_text': '© Lifestyle Store — Todos os direitos reservados',
+        'main_slogan': 'LIFE STYLE',
+        'footer_text': '© LIFE STYLE — Todos os direitos reservados',
         'whatsapp_link': None,
         'instagram_link': None,
         'terms': '',

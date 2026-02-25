@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import json
 import shutil
-import sqlite3
 import threading
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from app.core.database import AUTO_ID_TABLES, StoreDatabase, ensure_schema
 from app.data.content_defaults import DEFAULT_CATALOG, DEFAULT_SITE_CONTENT
 from app.models.schemas import AdminContentUpdateRequest, CatalogContent, Product, SiteContent
 
@@ -18,7 +18,7 @@ def utc_now() -> str:
 
 
 class SiteStore:
-    def __init__(self, database_path: str, backup_dir: str) -> None:
+    def __init__(self, database_path: str, backup_dir: str, *, database_url: str | None = None) -> None:
         base_dir = Path(__file__).resolve().parents[2]
         self.db_path = Path(database_path)
         self.backup_dir = Path(backup_dir)
@@ -28,47 +28,28 @@ class SiteStore:
         if not self.backup_dir.is_absolute():
             self.backup_dir = base_dir / self.backup_dir
 
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.backup_dir.mkdir(parents=True, exist_ok=True)
-
         self.write_lock = threading.Lock()
+        self.db = StoreDatabase(database_url=database_url, sqlite_path=self.db_path, auto_id_tables=AUTO_ID_TABLES)
+        if self.db.is_sqlite:
+            self.db_path.parent.mkdir(parents=True, exist_ok=True)
+            self.backup_dir.mkdir(parents=True, exist_ok=True)
         self._init_schema()
         self._seed_defaults()
 
     @contextmanager
     def connect(self):
-        conn = sqlite3.connect(self.db_path, check_same_thread=False)
-        conn.row_factory = sqlite3.Row
-        try:
+        with self.db.connect() as conn:
             yield conn
-        finally:
-            conn.close()
 
     def _init_schema(self) -> None:
-        with self.connect() as conn:
-            conn.executescript(
-                """
-                CREATE TABLE IF NOT EXISTS site_payloads (
-                    key TEXT PRIMARY KEY,
-                    payload TEXT NOT NULL,
-                    updated_at TEXT NOT NULL
-                );
-
-                CREATE TABLE IF NOT EXISTS site_revisions (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    actor TEXT NOT NULL,
-                    action TEXT NOT NULL,
-                    details TEXT NOT NULL,
-                    created_at TEXT NOT NULL
-                );
-                """
-            )
-            conn.commit()
+        ensure_schema(self.db.engine, include='site')
 
     def _backup_daily(self) -> None:
+        if not self.db.is_sqlite:
+            return
         if not self.db_path.exists():
             return
-        backup_name = f"crm-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.db"
+        backup_name = f"site-{datetime.now(timezone.utc).strftime('%Y-%m-%d')}.db"
         backup_path = self.backup_dir / backup_name
         if not backup_path.exists():
             shutil.copy2(self.db_path, backup_path)
@@ -91,7 +72,7 @@ class SiteStore:
 
             conn.commit()
 
-    def _read_payload(self, conn: sqlite3.Connection, key: str) -> dict[str, Any]:
+    def _read_payload(self, conn: Any, key: str) -> dict[str, Any]:
         row = conn.execute('SELECT payload FROM site_payloads WHERE key = ?', (key,)).fetchone()
         if row is None:
             raise ValueError(f'Payload ausente: {key}')

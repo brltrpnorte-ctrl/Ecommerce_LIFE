@@ -47,7 +47,7 @@ cd scripts
 ## Token Admin
 
 ```
-REDACTED_ADMIN_TOKEN
+<SEU_TOKEN_ADMIN>
 ```
 
 Use no header: `X-Admin-Token`

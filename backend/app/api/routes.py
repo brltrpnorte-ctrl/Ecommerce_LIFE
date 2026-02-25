@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import lru_cache
 from typing import Annotated
 
 import logging
@@ -42,8 +43,16 @@ from app.services.crm_store import PIPELINE_STAGES
 
 router = APIRouter()
 settings = get_settings()
-crm_store = CRMStore(settings.database_path, settings.backup_dir)
-site_store = SiteStore(settings.database_path, settings.backup_dir)
+
+
+@lru_cache(maxsize=1)
+def get_crm_store() -> CRMStore:
+    return CRMStore(settings.database_path, settings.backup_dir, database_url=settings.runtime_database_url)
+
+
+@lru_cache(maxsize=1)
+def get_site_store() -> SiteStore:
+    return SiteStore(settings.database_path, settings.backup_dir, database_url=settings.runtime_database_url)
 
 
 def normalize_role(value: str | None) -> str:
@@ -86,12 +95,12 @@ def health() -> dict[str, str]:
 
 @router.get('/site/content', response_model=SiteContent)
 def get_site_content() -> SiteContent:
-    return SiteContent(**site_store.get_site_content())
+    return SiteContent(**get_site_store().get_site_content())
 
 
 @router.get('/categories', response_model=CategoryListResponse)
 def list_categories() -> CategoryListResponse:
-    categories = site_store.list_categories()
+    categories = get_site_store().list_categories()
     return CategoryListResponse(
         items=[item['slug'] for item in categories],
         labels={item['slug']: item['label'] for item in categories},
@@ -100,7 +109,7 @@ def list_categories() -> CategoryListResponse:
 
 @router.get('/brands', response_model=BrandListResponse)
 def list_brands() -> BrandListResponse:
-    return BrandListResponse(items=site_store.list_brands())
+    return BrandListResponse(items=get_site_store().list_brands())
 
 
 @router.get('/products', response_model=ProductListResponse)
@@ -111,10 +120,11 @@ def list_products(
     min_price: float | None = Query(default=None, ge=0),
     max_price: float | None = Query(default=None, ge=0),
     featured: bool | None = Query(default=None),
+    promo_only: bool | None = Query(default=None),
     page: int = Query(default=1, ge=1),
     page_size: int = Query(default=12, ge=1, le=48),
 ) -> ProductListResponse:
-    items = site_store.list_products()
+    items = get_site_store().list_products()
 
     if category:
         items = [item for item in items if item.category == category]
@@ -136,6 +146,11 @@ def list_products(
         items = [item for item in items if item.price <= max_price]
     if featured is not None:
         items = [item for item in items if item.featured is featured]
+    if promo_only is not None:
+        if promo_only:
+            items = [item for item in items if bool((item.promo_tag or '').strip())]
+        else:
+            items = [item for item in items if not bool((item.promo_tag or '').strip())]
 
     total = len(items)
     start = (page - 1) * page_size
@@ -147,7 +162,7 @@ def list_products(
 def get_product(slug: str) -> Product:
     if not slug or len(slug) > 100:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Slug invalido')
-    for item in site_store.list_products():
+    for item in get_site_store().list_products():
         if item.slug == slug:
             return item
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Produto nao encontrado')
@@ -207,15 +222,17 @@ def admin_overview(
 ) -> dict[str, int | float]:
     require_admin_token(x_admin_token)
 
-    products = site_store.list_products()
+    products = get_site_store().list_products()
     low_stock = [item for item in products if item.stock <= 12]
     featured = [item for item in products if item.featured]
-    crm_snapshot = crm_store.dashboard()
+    promo_products = [item for item in products if bool((item.promo_tag or '').strip())]
+    crm_snapshot = get_crm_store().dashboard()
 
     return {
         'total_products': len(products),
         'low_stock_alerts': len(low_stock),
         'featured_products': len(featured),
+        'promo_products': len(promo_products),
         'estimated_month_revenue': 189430.0,
         'open_orders': 37,
         'crm_total_leads': crm_snapshot['total_leads'],
@@ -228,7 +245,7 @@ def admin_content(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> AdminContentResponse:
     require_admin_token(x_admin_token)
-    return AdminContentResponse(**site_store.get_admin_content())
+    return AdminContentResponse(**get_site_store().get_admin_content())
 
 
 @router.put('/admin/content', response_model=AdminContentResponse)
@@ -238,7 +255,7 @@ def admin_update_content(
 ) -> AdminContentResponse:
     require_admin_token(x_admin_token)
     try:
-        updated = site_store.update_admin_content(payload.model_dump(), by='admin')
+        updated = get_site_store().update_admin_content(payload.model_dump(), by='admin')
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     return AdminContentResponse(**updated)
@@ -251,7 +268,7 @@ def crm_stages() -> dict[str, list[str]]:
 
 @router.post('/crm/leads/capture', response_model=LeadCaptureResponse, status_code=status.HTTP_201_CREATED)
 def crm_capture_lead(payload: LeadCaptureRequest) -> LeadCaptureResponse:
-    result = crm_store.capture_lead(payload.model_dump())
+    result = get_crm_store().capture_lead(payload.model_dump())
     return LeadCaptureResponse(**result)
 
 
@@ -264,7 +281,7 @@ def crm_list_contacts(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> ContactListResponse:
     authorize_crm(x_user_role, x_admin_token, write=False)
-    items = crm_store.list_contacts(status=status_filter, tag=tag, search=search)
+    items = get_crm_store().list_contacts(status=status_filter, tag=tag, search=search)
     return ContactListResponse(items=items, total=len(items))
 
 
@@ -278,7 +295,7 @@ def crm_list_leads(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> LeadListResponse:
     authorize_crm(x_user_role, x_admin_token, write=False)
-    items = crm_store.list_leads(stage=stage, owner=owner, active_only=active_only, search=search)
+    items = get_crm_store().list_leads(stage=stage, owner=owner, active_only=active_only, search=search)
     return LeadListResponse(items=items, total=len(items))
 
 
@@ -291,7 +308,7 @@ def crm_update_lead(
 ) -> LeadRecord:
     role = authorize_crm(x_user_role, x_admin_token, write=True)
     try:
-        result = crm_store.update_lead(lead_id, payload.model_dump(), by=role)
+        result = get_crm_store().update_lead(lead_id, payload.model_dump(), by=role)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     return LeadRecord(**result)
@@ -305,7 +322,7 @@ def crm_create_interaction(
 ) -> InteractionRecord:
     role = authorize_crm(x_user_role, x_admin_token, write=True)
     try:
-        result = crm_store.create_interaction(payload.model_dump(), by=role)
+        result = get_crm_store().create_interaction(payload.model_dump(), by=role)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     return InteractionRecord(**result)
@@ -320,7 +337,7 @@ def crm_list_interactions(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> InteractionListResponse:
     authorize_crm(x_user_role, x_admin_token, write=False)
-    items = crm_store.list_interactions(contact_id=contact_id, lead_id=lead_id, limit=limit)
+    items = get_crm_store().list_interactions(contact_id=contact_id, lead_id=lead_id, limit=limit)
     return InteractionListResponse(items=items, total=len(items))
 
 
@@ -332,7 +349,7 @@ def crm_create_task(
 ) -> TaskRecord:
     role = authorize_crm(x_user_role, x_admin_token, write=True)
     try:
-        result = crm_store.create_task(payload.model_dump(), by=role)
+        result = get_crm_store().create_task(payload.model_dump(), by=role)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     return TaskRecord(**result)
@@ -347,7 +364,7 @@ def crm_update_task(
 ) -> TaskRecord:
     role = authorize_crm(x_user_role, x_admin_token, write=True)
     try:
-        result = crm_store.update_task(task_id, done=payload.done, by=role)
+        result = get_crm_store().update_task(task_id, done=payload.done, by=role)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
     return TaskRecord(**result)
@@ -363,7 +380,7 @@ def crm_list_tasks(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> TaskListResponse:
     authorize_crm(x_user_role, x_admin_token, write=False)
-    items = crm_store.list_tasks(lead_id=lead_id, owner=owner, done=done, limit=limit)
+    items = get_crm_store().list_tasks(lead_id=lead_id, owner=owner, done=done, limit=limit)
     return TaskListResponse(items=items, total=len(items))
 
 
@@ -374,7 +391,7 @@ def crm_automation_followups(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> FollowUpAutomationResponse:
     role = authorize_crm(x_user_role, x_admin_token, write=True)
-    result = crm_store.run_stalled_lead_automation(stale_days=stale_days, by=role)
+    result = get_crm_store().run_stalled_lead_automation(stale_days=stale_days, by=role)
     return FollowUpAutomationResponse(**result)
 
 
@@ -385,7 +402,7 @@ def crm_dashboard(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> CrmDashboardResponse:
     authorize_crm(x_user_role, x_admin_token, write=False)
-    return CrmDashboardResponse(**crm_store.dashboard(stale_days=stale_days))
+    return CrmDashboardResponse(**get_crm_store().dashboard(stale_days=stale_days))
 
 
 @router.get('/crm/audit', response_model=AuditLogListResponse)
@@ -394,7 +411,7 @@ def crm_audit_logs(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> AuditLogListResponse:
     require_admin_token(x_admin_token)
-    items = crm_store.list_audit(limit=limit)
+    items = get_crm_store().list_audit(limit=limit)
     return AuditLogListResponse(items=items, total=len(items))
 
 
@@ -403,5 +420,6 @@ def crm_backup(
     x_admin_token: Annotated[str | None, Header()] = None,
 ) -> dict[str, str]:
     require_admin_token(x_admin_token)
-    path = crm_store.backup_now()
+    path = get_crm_store().backup_now()
     return {'backup_path': path}
+

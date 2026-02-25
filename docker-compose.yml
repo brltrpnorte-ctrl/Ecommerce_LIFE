@@ -1,22 +1,21 @@
 services:
-  backend:
-    build:
-      context: ./backend
-    container_name: ecommerce-life-backend
-    env_file:
-      - ./backend/.env
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecommerce-life-postgres
+    environment:
+      POSTGRES_USER: ecommerce_user
+      POSTGRES_PASSWORD: ecommerce_secure_password
+      POSTGRES_DB: ecommerce_life
     ports:
-      - '8000:8000'
+      - '127.0.0.1:5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ecommerce_user -d ecommerce_life']
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  frontend:
-    build:
-      context: ./frontend
-      args:
-        VITE_API_URL: http://localhost:8000/api/v1
-    container_name: ecommerce-life-frontend
-    ports:
-      - '3000:80'
-    restart: unless-stopped
-    depends_on:
-      - backend
+volumes:
+  postgres_data:
