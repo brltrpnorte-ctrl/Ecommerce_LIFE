@@ -9,7 +9,11 @@
     "dev:frontend": "cd frontend && npm run dev",
     "dev:backend": "cd backend && python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
     "docker:up": "docker compose up --build",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "vercel-build": "cd frontend && npm run build"
+  },
+  "engines": {
+    "node": "24.x"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.24",
