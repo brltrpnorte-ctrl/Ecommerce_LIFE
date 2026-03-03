@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Annotated
 
 import logging
+import secrets
 
 from fastapi import APIRouter, Header, HTTPException, Query, status
 
@@ -69,7 +70,7 @@ def require_admin_token(token: str | None) -> None:
         else:
             logging.getLogger('ecommerce').warning('Using default admin token in non-production environment')
 
-    if token != settings.auth_token:
+    if not token or not any(secrets.compare_digest(token, expected) for expected in settings.admin_tokens):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='Token admin invalido')
 
 
@@ -79,7 +80,7 @@ def authorize_crm(
     *,
     write: bool = False,
 ) -> str:
-    if x_admin_token == settings.auth_token:
+    if x_admin_token and any(secrets.compare_digest(x_admin_token, expected) for expected in settings.admin_tokens):
         return 'admin'
     role = normalize_role(x_user_role)
     allowed = settings.crm_write_roles if write else settings.crm_roles

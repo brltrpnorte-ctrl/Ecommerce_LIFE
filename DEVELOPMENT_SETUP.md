@@ -71,7 +71,7 @@ Frontend estará em `http://localhost:5173`
 ## 4. Acessar Painel Admin
 
 1. Abra http://localhost:5173/admin
-2. Cole o token admin: `REDACTED_ADMIN_TOKEN`
+2. Cole o token admin: `<SEU_AUTH_TOKEN_DE_DESENVOLVIMENTO>`
 3. Clique "Carregar painel"
 
 ---

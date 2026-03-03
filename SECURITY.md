@@ -50,9 +50,20 @@ python generate_token.py
 ### Atualizar .env
 ```env
 AUTH_TOKEN=<token_gerado>
+AUTH_TOKEN_PREVIOUS=
 ENVIRONMENT=production
 ALLOWED_ORIGINS=https://seudominio.com
 ```
+
+### Rotacionar AUTH_TOKEN (sem downtime)
+1. Gere um novo token com `python backend/generate_token.py`.
+2. No provider de deploy (Render/Vercel/VM), configure:
+   - `AUTH_TOKEN=<token_novo>`
+   - `AUTH_TOKEN_PREVIOUS=<token_antigo>`
+3. Faça o deploy/restart do backend.
+4. Atualize clientes/scripts admin para usar o token novo.
+5. Acompanhe logs por 24h para garantir que não há uso do token antigo.
+6. Remova `AUTH_TOKEN_PREVIOUS` e redeploy.
 
 ## âš ï¸ PrÃ³ximas Etapas CrÃ­ticas
 

@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     allowed_origin_regex: str | None = None
     allowed_hosts: str = 'localhost,127.0.0.1'
     auth_token: str = 'change-this-token-in-production'
+    auth_token_previous: str | None = None
     database_path: str = 'data/ecommerce_life.db'
     database_url: str | None = None
     database_url_runtime: str | None = None
@@ -81,6 +82,13 @@ class Settings(BaseSettings):
     @property
     def crm_write_roles(self) -> set[str]:
         return {role.strip().lower() for role in self.crm_editor_roles.split(',') if role.strip()}
+
+    @property
+    def admin_tokens(self) -> set[str]:
+        tokens = {self.auth_token.strip()} if self.auth_token and self.auth_token.strip() else set()
+        if self.auth_token_previous:
+            tokens.update(token.strip() for token in self.auth_token_previous.split(',') if token.strip())
+        return tokens
 
 
 @lru_cache
